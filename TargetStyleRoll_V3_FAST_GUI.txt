@@ -1,0 +1,226 @@
+-- TARGET STYLE ROLL V3 | FAST GUI
+-- GUI-only version
+
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+-- Prevent duplicate GUI
+local Existing = PlayerGui:FindFirstChild("TargetStyleRollV3")
+if Existing then
+    Existing:Destroy()
+end
+
+local Purple = Color3.fromRGB(145, 75, 255)
+local Dark = Color3.fromRGB(19, 16, 29)
+local Panel = Color3.fromRGB(31, 25, 45)
+local White = Color3.fromRGB(245, 240, 255)
+
+local Screen = Instance.new("ScreenGui")
+Screen.Name = "TargetStyleRollV3"
+Screen.ResetOnSpawn = false
+Screen.Parent = PlayerGui
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.fromOffset(330, 370)
+Main.Position = UDim2.new(0.5, -165, 0.5, -185)
+Main.BackgroundColor3 = Dark
+Main.BorderSizePixel = 0
+Main.Parent = Screen
+
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
+
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Purple
+Stroke.Thickness = 1.5
+Stroke.Parent = Main
+
+local function Label(parent, text, size, position, color)
+    local obj = Instance.new("TextLabel")
+    obj.Size = size
+    obj.Position = position
+    obj.BackgroundTransparency = 1
+    obj.Text = text
+    obj.TextColor3 = color or White
+    obj.TextSize = 13
+    obj.Font = Enum.Font.GothamSemibold
+    obj.TextXAlignment = Enum.TextXAlignment.Left
+    obj.Parent = parent
+    return obj
+end
+
+local function Button(parent, text, position, size)
+    local obj = Instance.new("TextButton")
+    obj.Size = size
+    obj.Position = position
+    obj.BackgroundColor3 = Panel
+    obj.Text = text
+    obj.TextColor3 = White
+    obj.TextSize = 13
+    obj.Font = Enum.Font.GothamBold
+    obj.AutoButtonColor = true
+    obj.Parent = parent
+    Instance.new("UICorner", obj).CornerRadius = UDim.new(0, 7)
+    return obj
+end
+
+-- Header
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 48)
+Header.BackgroundColor3 = Panel
+Header.BorderSizePixel = 0
+Header.Parent = Main
+
+Instance.new("UICorner", Header).CornerRadius = UDim.new(0, 12)
+
+Label(Header, "TARGET STYLE ROLL", UDim2.new(1, -55, 0, 24),
+    UDim2.fromOffset(14, 5), White)
+
+Label(Header, "VOLLEYBALL LEGENDS", UDim2.new(1, -55, 0, 15),
+    UDim2.fromOffset(14, 27), Purple)
+
+local Close = Button(Header, "X", UDim2.new(1, -40, 0, 8),
+    UDim2.fromOffset(30, 30))
+
+Close.MouseButton1Click:Connect(function()
+    Screen:Destroy()
+end)
+
+-- Drag
+local dragging, dragStart, startPos
+
+Header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Main.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
+    or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+-- Target
+Label(Main, "TARGET STYLE", UDim2.fromOffset(290, 20),
+    UDim2.fromOffset(18, 62), Purple)
+
+local Target = Instance.new("TextBox")
+Target.Size = UDim2.new(1, -36, 0, 36)
+Target.Position = UDim2.fromOffset(18, 85)
+Target.BackgroundColor3 = Panel
+Target.PlaceholderText = "Enter Style Name..."
+Target.Text = ""
+Target.TextColor3 = White
+Target.PlaceholderColor3 = Color3.fromRGB(150, 140, 165)
+Target.Font = Enum.Font.Gotham
+Target.TextSize = 13
+Target.ClearTextOnFocus = false
+Target.Parent = Main
+Instance.new("UICorner", Target).CornerRadius = UDim.new(0, 7)
+
+-- Spin Type
+Label(Main, "SPIN TYPE", UDim2.fromOffset(290, 20),
+    UDim2.fromOffset(18, 133), Purple)
+
+local SpinType = "Normal"
+
+local Normal = Button(Main, "NORMAL", UDim2.fromOffset(18, 157),
+    UDim2.fromOffset(142, 34))
+
+local Lucky = Button(Main, "LUCKY", UDim2.fromOffset(170, 157),
+    UDim2.fromOffset(142, 34))
+
+local function UpdateSpin()
+    Normal.BackgroundColor3 =
+        SpinType == "Normal" and Purple or Panel
+    Lucky.BackgroundColor3 =
+        SpinType == "Lucky" and Purple or Panel
+end
+
+Normal.MouseButton1Click:Connect(function()
+    SpinType = "Normal"
+    UpdateSpin()
+end)
+
+Lucky.MouseButton1Click:Connect(function()
+    SpinType = "Lucky"
+    UpdateSpin()
+end)
+
+UpdateSpin()
+
+-- Roll Limit
+Label(Main, "ROLL LIMIT", UDim2.fromOffset(290, 20),
+    UDim2.fromOffset(18, 205), Purple)
+
+local Limit = Instance.new("TextBox")
+Limit.Size = UDim2.fromOffset(294, 34)
+Limit.Position = UDim2.fromOffset(18, 229)
+Limit.BackgroundColor3 = Panel
+Limit.Text = "10"
+Limit.TextColor3 = White
+Limit.Font = Enum.Font.Gotham
+Limit.TextSize = 13
+Limit.Parent = Main
+Instance.new("UICorner", Limit).CornerRadius = UDim.new(0, 7)
+
+-- Status
+local Status = Label(Main, "STATUS: READY", UDim2.fromOffset(290, 20),
+    UDim2.fromOffset(18, 273), Color3.fromRGB(190, 160, 255))
+
+local Start = Button(Main, "START", UDim2.fromOffset(18, 300),
+    UDim2.fromOffset(142, 38))
+
+local Stop = Button(Main, "STOP & RESET", UDim2.fromOffset(170, 300),
+    UDim2.fromOffset(142, 38))
+
+local running = false
+
+Start.MouseButton1Click:Connect(function()
+    if running then return end
+
+    if Target.Text:gsub("%s+", "") == "" then
+        Status.Text = "STATUS: ENTER TARGET STYLE"
+        return
+    end
+
+    local amount = tonumber(Limit.Text)
+    if not amount or amount < 1 or amount > 25 then
+        Status.Text = "STATUS: LIMIT MUST BE 1-25"
+        return
+    end
+
+    running = true
+    Status.Text = "STATUS: GUI READY - ROLL NOT CONNECTED"
+end)
+
+Stop.MouseButton1Click:Connect(function()
+    running = false
+    Target.Text = ""
+    Limit.Text = "10"
+    SpinType = "Normal"
+    UpdateSpin()
+    Status.Text = "STATUS: RESET"
+end)
