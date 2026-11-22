@@ -1,0 +1,255 @@
+-- TARGET STYLE ROLL V2
+-- Purple / Black UI for Delta
+-- UI demo only: START/STOP do not perform game rolls or data rollback.
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+pcall(function()
+    local old = PlayerGui:FindFirstChild("TargetStyleV2")
+    if old then old:Destroy() end
+end)
+
+local Purple = Color3.fromRGB(145, 75, 230)
+local Dark = Color3.fromRGB(17, 15, 24)
+local Panel = Color3.fromRGB(29, 24, 39)
+local White = Color3.fromRGB(245, 240, 255)
+
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "TargetStyleV2"
+Gui.ResetOnSpawn = false
+Gui.Parent = PlayerGui
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.fromOffset(340, 390)
+Main.Position = UDim2.new(0.5, -170, 0.5, -195)
+Main.BackgroundColor3 = Dark
+Main.BorderSizePixel = 0
+Main.Parent = Gui
+
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 14)
+Corner.Parent = Main
+
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Purple
+Stroke.Thickness = 1.5
+Stroke.Parent = Main
+
+-- Drag using the header only
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 65)
+Header.BackgroundColor3 = Color3.fromRGB(48, 30, 67)
+Header.BorderSizePixel = 0
+Header.Parent = Main
+Instance.new("UICorner", Header).CornerRadius = UDim.new(0, 14)
+
+local dragging = false
+local dragInput, dragStart, startPos
+
+Header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Main.Position
+        dragInput = input
+    end
+end)
+
+Header.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input == dragInput then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -65, 0, 27)
+Title.Position = UDim2.fromOffset(15, 8)
+Title.BackgroundTransparency = 1
+Title.Text = "TARGET STYLE"
+Title.TextColor3 = White
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Header
+
+local Subtitle = Instance.new("TextLabel")
+Subtitle.Size = UDim2.new(1, -65, 0, 20)
+Subtitle.Position = UDim2.fromOffset(16, 34)
+Subtitle.BackgroundTransparency = 1
+Subtitle.Text = "VOLLEYBALL LEGENDS"
+Subtitle.TextColor3 = Color3.fromRGB(190, 145, 255)
+Subtitle.Font = Enum.Font.Gotham
+Subtitle.TextSize = 10
+Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+Subtitle.Parent = Header
+
+local Mini = Instance.new("TextButton")
+Mini.Size = UDim2.fromOffset(30, 30)
+Mini.Position = UDim2.new(1, -42, 0, 17)
+Mini.BackgroundColor3 = Purple
+Mini.Text = "—"
+Mini.TextColor3 = White
+Mini.TextSize = 18
+Mini.Font = Enum.Font.GothamBold
+Mini.Parent = Header
+Instance.new("UICorner", Mini).CornerRadius = UDim.new(0, 8)
+
+local Content = Instance.new("Frame")
+Content.Position = UDim2.fromOffset(15, 80)
+Content.Size = UDim2.new(1, -30, 1, -95)
+Content.BackgroundTransparency = 1
+Content.Parent = Main
+
+local function makeLabel(text, y)
+    local obj = Instance.new("TextLabel")
+    obj.Size = UDim2.new(1, 0, 0, 22)
+    obj.Position = UDim2.fromOffset(0, y)
+    obj.BackgroundTransparency = 1
+    obj.Text = text
+    obj.TextColor3 = White
+    obj.Font = Enum.Font.GothamSemibold
+    obj.TextSize = 12
+    obj.TextXAlignment = Enum.TextXAlignment.Left
+    obj.Parent = Content
+    return obj
+end
+
+local function makeButton(text, y, color)
+    local obj = Instance.new("TextButton")
+    obj.Size = UDim2.new(1, 0, 0, 38)
+    obj.Position = UDim2.fromOffset(0, y)
+    obj.BackgroundColor3 = color
+    obj.Text = text
+    obj.TextColor3 = White
+    obj.Font = Enum.Font.GothamBold
+    obj.TextSize = 13
+    obj.AutoButtonColor = true
+    obj.Parent = Content
+    Instance.new("UICorner", obj).CornerRadius = UDim.new(0, 9)
+    return obj
+end
+
+makeLabel("TARGET STYLE", 0)
+
+local Target = Instance.new("TextBox")
+Target.Size = UDim2.new(1, 0, 0, 38)
+Target.Position = UDim2.fromOffset(0, 25)
+Target.BackgroundColor3 = Panel
+Target.PlaceholderText = "Enter style name..."
+Target.Text = ""
+Target.TextColor3 = White
+Target.PlaceholderColor3 = Color3.fromRGB(150, 140, 165)
+Target.Font = Enum.Font.Gotham
+Target.TextSize = 13
+Target.ClearTextOnFocus = false
+Target.Parent = Content
+Instance.new("UICorner", Target).CornerRadius = UDim.new(0, 9)
+
+makeLabel("SPIN TYPE", 73)
+
+local Normal = makeButton("NORMAL", 98, Purple)
+local Lucky = makeButton("LUCKY", 143, Panel)
+local spinType = "Normal"
+
+Normal.MouseButton1Click:Connect(function()
+    spinType = "Normal"
+    Normal.BackgroundColor3 = Purple
+    Lucky.BackgroundColor3 = Panel
+end)
+
+Lucky.MouseButton1Click:Connect(function()
+    spinType = "Lucky"
+    Lucky.BackgroundColor3 = Purple
+    Normal.BackgroundColor3 = Panel
+end)
+
+makeLabel("ROLL LIMIT", 190)
+
+local Limit = Instance.new("TextBox")
+Limit.Size = UDim2.new(1, 0, 0, 32)
+Limit.Position = UDim2.fromOffset(0, 215)
+Limit.BackgroundColor3 = Panel
+Limit.Text = "10"
+Limit.TextColor3 = White
+Limit.Font = Enum.Font.GothamBold
+Limit.TextSize = 14
+Limit.ClearTextOnFocus = false
+Limit.Parent = Content
+Instance.new("UICorner", Limit).CornerRadius = UDim.new(0, 8)
+
+local Status = makeLabel("STATUS: WAITING...", 253)
+Status.TextColor3 = Color3.fromRGB(200, 170, 255)
+
+local Start = makeButton("START", 280, Purple)
+local Stop = makeButton("STOP", 325, Color3.fromRGB(75, 40, 65))
+
+local running = false
+
+Start.MouseButton1Click:Connect(function()
+    if running then return end
+    if Target.Text == "" then
+        Status.Text = "STATUS: ENTER TARGET FIRST"
+        return
+    end
+
+    local count = tonumber(Limit.Text)
+    if not count or count < 1 or count > 25 or count % 1 ~= 0 then
+        Status.Text = "STATUS: INVALID LIMIT (1-25)"
+        return
+    end
+
+    running = true
+    Status.Text = "STATUS: UI DEMO ACTIVE"
+end)
+
+Stop.MouseButton1Click:Connect(function()
+    running = false
+    Status.Text = "STATUS: STOPPED"
+end)
+
+local Floating = Instance.new("TextButton")
+Floating.Size = UDim2.fromOffset(48, 48)
+Floating.Position = UDim2.new(0, 20, 0.5, 0)
+Floating.BackgroundColor3 = Purple
+Floating.Text = "TS"
+Floating.TextColor3 = White
+Floating.Font = Enum.Font.GothamBold
+Floating.TextSize = 16
+Floating.Visible = false
+Floating.Parent = Gui
+Instance.new("UICorner", Floating).CornerRadius = UDim.new(1, 0)
+
+Mini.MouseButton1Click:Connect(function()
+    Main.Visible = false
+    Floating.Visible = true
+end)
+
+Floating.MouseButton1Click:Connect(function()
+    Main.Visible = true
+    Floating.Visible = false
+end)
+
+print("Target Style Roll V2 GUI Loaded")
